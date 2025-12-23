@@ -19,16 +19,32 @@ app.post('/solve', (req, res) => {
 
     const solverPath = path.join(__dirname, 'NNN_Rubiks_Cube_linux_server');
 
-    execFile(solverPath, cube.map(String), (err, stdout, stderr) => {
-        if (err) {
-            console.error('SOLVER STDERR:', stderr);
-            return res.status(500).json({ error: err.message });
-        }
+    execFile(
+  solverPath,
+  cube.map(String),
+  (err, stdout, stderr) => {
 
-        res.json({ steps: stdout.trim() });
-    });
+    if (err) {
+        console.error("SOLVER ERROR:", err);
+        console.error("SOLVER STDERR:", stderr);
+        return res.status(500).json({
+            error: err.message,
+            stderr: stderr
+        });
+    }
+
+    if (!stdout || !stdout.trim()) {
+        return res.status(500).json({
+            error: "Solver returned empty output"
+        });
+    }
+
+    res.json({ steps: stdout.trim() });
+});
+
 });
 
 app.listen(port, () => {
     console.log(`Server running on port ${port}`);
 });
+
