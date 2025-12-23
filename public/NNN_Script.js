@@ -219,7 +219,7 @@ form.addEventListener('submit',(e)=>{
         console.log(`cube string_for_input = ${cube_string.join(' ')}`);
 
         //console.log('Color submit is clicked');
-        fetch("http://localhost:3000/solve",{
+        fetch("/solve",{
             method: "POST",
             headers:{ "Content-Type": "application/json" },
             body: JSON.stringify({cube: cube_string})
