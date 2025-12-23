@@ -4,7 +4,7 @@ const cors = require('cors');
 
 
 const app = express();
-
+const port = process.env.PORT || 3000;
 
 app.use(cors());
 app.use(express.json());
@@ -30,4 +30,5 @@ app.post('/solve', (req, res) => {
 });
 
 //Starts the server
-app.listen(3000, () => console.log("Server running on port 3000"));
+
+app.listen(port, () => console.log(`Server running on port ${port}`));
