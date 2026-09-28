@@ -2,11 +2,10 @@
 #include<stdlib.h>
 #include<time.h>
 
-#define MAX_STEPS 100000
-#define MAX_DIM 30
-#define MAX_SAMPLES 50
+#define MAX_STEPS 100001
+#define MAX_DIM 51
+#define MAX_SAMPLES 101
 
-#define CLEAR_SCREEN "\033[2J\033[H"
 
 //Regular text
 #define BLK "\e[0;30m"
@@ -306,15 +305,18 @@ int*** new_cube(int dim)
         }
     }
 
-    for(int color = 0; color < 6; color++)
+
+    for(int i = 0; i < dim; i++)
     {
-        for(int i = 0; i < dim; i++)
+        for(int j = 0; j < dim; j++)
         {
-            for(int j = 0; j < dim; j++)
-            {
-                cube[color][i][j] = color + 1;
-            }
-        }
+            cube[0][i][j] = 1;
+            cube[1][i][j] = 2;
+            cube[2][i][j] = 3;
+            cube[3][i][j] = 4;
+            cube[4][i][j] = 6;
+            cube[5][i][j] = 5;
+        }   
     }
 
     return cube;
@@ -484,7 +486,7 @@ void generate(){
     }
     printf(CYN "\n----PROGRESS----\n\n" BLU);
     
-    for(int dim = start_dim; dim <= end_dim; dim ++){
+    for(int dim = start_dim; dim <= end_dim; dim++){
 
         fprintf(file, "DIMENSION : %d\n",dim);
         fprintf(encoded_file,"%d\n",dim);
@@ -528,7 +530,7 @@ void generate(){
 }
 
 int main(){
-    printf(CLEAR_SCREEN);
+    system("cls");
 
     srand((unsigned int)time(NULL));
 
@@ -556,7 +558,8 @@ int main(){
                 system(input);
                 return 0;
             case 0:
-                printf(COLOR_RESET "" CLEAR_SCREEN);
+                printf(COLOR_RESET);
+                system("cls");
                 exit(0);
             default:
                 printf("Invalid option.\n");
