@@ -3,8 +3,8 @@
 #include<time.h>
 
 #define MAX_STEPS 100001
-#define MAX_DIM 51
-#define MAX_SAMPLES 101
+#define MAX_DIM 101
+#define MAX_SAMPLES 1001
 
 
 //Regular text

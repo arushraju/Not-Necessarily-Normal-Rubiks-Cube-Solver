@@ -14,13 +14,13 @@ FILE* result_file;
 const int run = 0;
 
 //If testing
-const int test = 0;
+const int test = 1;
 
 //This is for number of steps
 int steps = 0;
 
 //This is to dsiaply the output
-const int isDisplay = 0;
+const int isDisplay = 1;
 
 /*This will be the data structure i will be using. It represents the cube
 And this contains 6 faces each of dimension n*n. N to be
@@ -296,7 +296,6 @@ void rot(char way, int p, int m)
     {
         for(int t = 0;t<m;t++)
         {
-            if(!isTurn) steps++;
             //This means rotation of the left most layer.
             if(p==0)
             {
@@ -343,14 +342,17 @@ void rot(char way, int p, int m)
         }
         if(!isTurn){
             if(m==1){
+                steps++;
                 if(test) printf("Rotate %d th layer from left, up\n",p+1);
                 if(isDisplay) fprintf(display_file, "Rotate %d th layer from left, up\n",p+1);
             }
             else if(m==3){
+                steps++;
                 if(test) printf("Rotate %d th layer from left, down\n",p+1);
                 if(isDisplay) fprintf(display_file,"Rotate %d th layer from left, down\n",p+1);
             }
             else{
+                steps = steps + 2;
                 if(test) printf("Rotate %d th layer from left twice\n",p+1);
                 if(isDisplay) fprintf(display_file, "Rotate %d th layer from left twice\n",p+1);
             } 
@@ -362,7 +364,6 @@ void rot(char way, int p, int m)
     {
         for(int t=0;t<m;t++)
         {
-            if(!isTurn) steps++;
             //If the layer is the bottom most layer
             if(p==0)
             {
@@ -409,14 +410,17 @@ void rot(char way, int p, int m)
         }
         if(!isTurn){
             if(m==1){
+                steps++;
                 if(test) printf("Rotate %d th layer from bottom, right\n",p+1);
                 if(isDisplay) fprintf(display_file, "Rotate %d th layer from bottom, right\n",p+1);
             }
             else if(m==3){
+                steps++;
                 if(test) printf("Rotate %d th layer from bottom, left\n",p+1);
                 if(isDisplay) fprintf(display_file, "Rotate %d th layer from bottom, left\n",p+1);
             }
             else{
+                steps = steps + 2;
                 if(test) printf("Rotate %d th layer from bottom, twice\n",p+1);
                 if(isDisplay) fprintf(display_file, "Rotate %d th layer from bottom, twice\n",p+1);
             }
@@ -428,7 +432,6 @@ void rot(char way, int p, int m)
     {
         for(int t = 0;t<m;t++)
         {
-            if(!isTurn) steps++;
             //This means we want to rotate the layer that is 0 distance awya from fornt face anticlockwise
             //Which is the front face itself.
             if(p==0)
@@ -477,14 +480,17 @@ void rot(char way, int p, int m)
         }
         if(isTurn){
             if(m==1){
+                steps++;
                 if(test) printf("Rotate %d th layer from front, anticlockwise\n",p+1);
                 if(isDisplay) fprintf(display_file, "Rotate %d th layer from front, anticlockwise\n",p+1);
             }
             else if(m==3){
+                steps++;
                 if(test) printf("Rotate %d th layer from front, clockwise\n",p+1);
                 if(isDisplay) fprintf(display_file, "Rotate %d th layer from front, clockwise\n",p+1);
             }
             else{
+                steps = steps + 2;
                 if(test) printf("Rotate %d th layer from front, twice\n",p+1);
                 if(isDisplay) fprintf(display_file, "Rotate %d th layer from front, twice\n",p+1);
             }
@@ -1386,36 +1392,6 @@ Rotate 1 th layer from bottom, right
         fprintf(display_file,"Now the edge at (White-Blue) position must be solved\n");
         display();
     }
-
-    
-
-    if(test) printf("If the cube is odd, then there is a posibility of having an unsolved edge due to center\n");
-    if(test) printf("Solved (1,2) = %d?\n",is_edge_solved(1,2));
-
-    //This is for the odd dimensional cubes only.
-    if(n%2 != 0)
-    {
-        if(cube[1][n/2][n-1] == top && cube[0][n/2][0] == front)
-        {
-            for(int i=(n/2)+1;i<n-1;i++){rot('l',i,3);}
-            rot('b',n-1,2);
-            for(int i=1;i<(n/2);i++){rot('l',i,3);}
-            rot('f',0,2);
-            for(int i=1;i<(n/2);i++){rot('l',i,1);}
-            rot('f',0,2);
-            for(int i=(n/2)+1;i<n-1;i++){rot('l',i,2);}
-            rot('b',n-1,2);
-            for(int i=(n/2)+1;i<n-1;i++){rot('l',i,1);}
-            rot('b',n-1,2);
-            for(int i=(n/2)+1;i<n-1;i++){rot('l',i,3);}
-            rot('b',n-1,2);
-            rot('f',0,2);
-            for(int i=(n/2)+1;i<n-1;i++){rot('l',i,2);}
-            rot('f',0,2);
-
-            critical =  critical + 1;
-        }
-    }
     return;
 }
 
@@ -1701,95 +1677,106 @@ void bring_unsolved_top()
     return;
 }
 
-//This will take in the integer which is the column number (i) and performs the single edge parity algo on to that column only
-void single_edge_parity_algorithm(int i)
-{
-    rot('l',n-1-i,3);
-    rot('b',n-1,2);
-    rot('l',i,3);
-    rot('f',0,2);
-    rot('l',i,1);
-    rot('f',0,2);
-    rot('l',n-1-i,2);
-    rot('b',n-1,2);
-    rot('l',n-1-i,1);
-    rot('b',n-1,2);
-    rot('l',n-1-i,3);
-    rot('b',n-1,2);
-    rot('f',0,2);
-    rot('l',n-1-i,2);
-    rot('f',0,2);
-
-}
-
-//this function will solve the single edge parity where the edge itself is present at the front-top edge.
-void odd_single_edge_parity()
-{
-    //This will store the color which is at the front face
-    int color1 = cube[1][n/2][n-1];
-    int color2 = cube[0][n/2][0];
-
-    for(int i=1;i<n-1;i++)
-    {
-        //If the rest of the color on the edge is not equal to color 1, then use the parity alogorithm
-        if(cube[1][i][n-1] == color2 && cube[0][i][0] == color1)
-        {
-            if(test) printf("Action...\n");
-            single_edge_parity_algorithm(i);
-        }
+//This function is only for the odd cubes where the edge with the middle edge 
+void bring_unsolved_top_for_odd(int top, int front){
+    //Check if edge (2,6) has the mid edge piece as required
+    if(cube[1][n/2][0] == front && cube[4][n/2][n-1] == top){
+        bring_unsolved_top();
+        turn('f',2);
+    } else if(cube[1][n/2][0] == top && cube[4][n/2][n-1] == front) {
+        bring_unsolved_top();
+        rot('b',0,1);
+        rot('f',0,1);
+        rot('l',n-1,1);
+        rot('f',0,1);
+    }
+    //Check if (1,3) edge
+    else if(cube[0][0][n/2] == top && cube[2][n/2][n-1] == front){
+        rot('b',n-1,1);
+    } else if(cube[0][0][n/2] == front && cube[2][n/2][n-1] == top){
+        rot('f',0,1);
+        rot('l',0,3);
+        rot('f',0,3);
+    }
+    //Check if (1,4) edge
+    else if(cube[0][n-1][n/2] == top && cube[3][n/2][n-1] == front){
+        rot('b',n-1,3);
+    } else if(cube[0][n-1][n/2] == front && cube[3][n/2][n-1] == top){
+        rot('f',0,3);
+        rot('l',n-1,3);
+        rot('f',0,1);
+    }
+    //Check if (1,5) edge
+    else if(cube[0][n/2][n-1] == top && cube[5][n/2][0] == front){
+        rot('b',n-1,2);
+    } else if(cube[0][n/2][n-1] == front && cube[5][n/2][0] == top){
+        rot('b',n-1,1);
+        rot('f',0,1);
+        rot('l',0,3);
+        rot('f',0,3);
+    }
+    //Check if (2,3) edge
+    else if(cube[1][0][n/2] == top && cube[2][n-1][n/2] == front){
+        rot('l',0,1);
+        rot('b',n-1,1);
+    } else if(cube[1][0][n/2] == front && cube[2][n-1][n/2] == top){
+        rot('b',0,1);
+        rot('f',0,3);
+        rot('b',0,3);
+    }
+    //Check if (2,4) edge
+    else if(cube[1][n-1][n/2] == top && cube[3][0][n/2] == front){
+        rot('l',n-1,1);
+        rot('b',n-1,3);
+    } else if(cube[1][n-1][n/2] == front && cube[3][0][n/2] == top){
+        rot('b',0,3);
+        rot('f',0,1);
+        rot('b',0,1);
+    }
+    //check if (3,6) edge
+    else if(cube[2][0][n/2] == top && cube[5][0][n/2] == front){
+        rot('f',n-1,3);
+        rot('b',n-1,2);
+    } else if(cube[2][0][n/2] == front && cube[5][0][n/2] == top){
+        rot('l',0,3);
+        rot('b',n-1,1);
+    }
+    //Check if (4,6) edge
+    else if(cube[3][n-1][n/2] == top && cube[5][n-1][n/2] == front){
+        rot('f',n-1,1);
+        rot('b',n-1,2);
+    } else if(cube[3][n-1][n/2] == front && cube[5][n-1][n/2] == top){
+        rot('l',n-1,3);
+        rot('b',n-1,3);
+    }
+    //Check for Edge (3,5)
+    else if(cube[2][n/2][0] == top && cube[4][0][n/2] == front){
+        rot('f',0,1);
+        rot('l',0,1);
+        rot('f',0,3);
+    } else if(cube[2][n/2][0] == front && cube[4][0][n/2] == top){
+        rot('l',0,2);
+        rot('b',n-1,1);
+    }
+    //Check for Edge (4,5)
+    else if(cube[3][n/2][0] == top && cube[4][n-1][n/2] == front){
+        rot('f',0,3);
+        rot('l',n-1,1);
+        rot('f',0,1);
+    } else if(cube[3][n/2][0] == front && cube[4][n-1][n/2] == top){
+        rot('l',n-1,2);
+        rot('b',n-1,3);
+    }
+    //Check for Edge (6,5)
+    else if(cube[4][n/2][0] == top && cube[5][n/2][n-1] == front){
+        rot('f',n-1,2);
+        rot('b',n-1,2);
+    } else if(cube[4][n/2][0] == front && cube[5][n/2][n-1] == top){
+        rot('f',n-1,1);
+        rot('l',n-1,3);
+        rot('b',n-1,3);
     }
 }
-
-//So the problem I am facing right now wiht odd function cubes is that after the solve_egde function is called, the edge is solved, but in case of odd cube, the center edge may be the one which is not flipped. So, this could be done by the safe solve function given below
-void safe_solve(){
-    if(test) printf("You are into safe function, because of the odd cube edge problem.\n");
-    //right down
-    for(int i=n/2+1;i<n-1;i++){
-        rot('l',i,3);//Rotate half of the left layers down.
-    }
-    //top twice
-    rot('b',n-1,2);//Rotate the top layer twice
-    //left down
-    for(int i=1;i<n/2;i++){
-        rot('l',i,3);//Rotate all the left layer down
-    }
-    //front twice
-    rot('f',0,2);//Rotate the front layer twice
-    //left up
-    for(int i=1;i<n/2;i++){
-        rot('l',i,1);//Rotate all the left layer down
-    }
-    //front twice
-    rot('f',0,2);//Rotate the front layer
-    //right twice
-    for(int i=n/2+1;i<n-1;i++){
-        rot('l',i,2);//Rotate half of the left layers down.
-    }
-    //top twice
-    rot('b',n-1,2);//Rotate the top layer twice
-    //right up
-    for(int i=n/2+1;i<n-1;i++){
-        rot('l',i,1);//Rotate half of the left layers down.
-    }
-    //top twice
-    rot('b',n-1,2);//Rotate the top layer twice
-    //right down
-    for(int i=n/2+1;i<n-1;i++){
-        rot('l',i,3);//Rotate half of the left layers down.
-    }
-    //top twice
-    rot('b',n-1,2);//Rotate the top layer 
-    //front twice
-    rot('f',0,2);//Rotate the front layer
-    //right twice
-    for(int i=n/2+1;i<n-1;i++){
-        rot('l',i,2);//Rotate half of the left layers down.
-    }
-    //front twice
-    rot('f',0,2);//Rotate the front layer
-    return;
-}
-
 
 //So one quick remedy that I get after this is to check if all the edges are solved each time I do something.
 //(isEdgeSolved(1,2) && isEdgeSolved(1,3)) return; will be the result of this quick remedy. I am to old to comb through all the code again
@@ -1801,15 +1788,18 @@ void edge_solve_parity()
 {
     if(test) printf("Into edge_solve_parity...\n");
     if(isDisplay) fprintf(display_file,"Into edge_solve_parity...\n");
-    for(int t=0;t<2;t++)
+    for(int t=0;t<8;t++)
     {
+        if(isDisplay) fprintf(display_file,"Number of unsolved edges is equal to %d\n",count_unsolved_edge());
         if(count_unsolved_edge() == 2){
+            if(isDisplay) fprintf(display_file,"There are two unsolved edges in parity problem\n");
             //First bring the unsolved edge to the (Blue-White) edge.
             bring_unsolved_top();
             turn('f',2);
-            //Because this wont distrub the edges that are att he bottom
+            //Because this wont distrub the edges that are at (2,5) edge
             bring_unsolved_top();
             turn('f',2);
+
             if(test){
                 printf("Now there should be two unsolved edges at (1,2) and (2,5) edge position\n");
                 display();
@@ -1818,66 +1808,81 @@ void edge_solve_parity()
                 fprintf(display_file,"Now there should be two unsolved edges at (1,2) and (2,5) edge position\n");
                 display();
             }
+
             //Now we will see which of the edge peices needs to be transfered to the other edge.
             //n/2 is taken to get rid of the confusion of odd rubiks cube.
-            int color1 = cube[1][n/2][n-1];   //Facing Blue
-            int color2 = cube[0][n/2][0];     //Facing white
+            int front_color = cube[1][n/2][n-1];   //Facing Blue
+            int top_color = cube[0][n/2][0];     //Facing white
+
+            if(isDisplay) fprintf(display_file,"Now check for fixing the edge (1,2). Colors at those edges will be checked now\nfront_color = %d | top_color = %d\n",front_color,top_color);
+
             for(int k=1;k<n-1;k++)
             {
-                if(!(cube[1][k][n-1] == color1 && cube[0][k][0] == color2))
+                if(isDisplay) fprintf(display_file,"Now checking for the piece at i = %d\n",k);
+                if(cube[1][k][n-1] != front_color || cube[0][k][0] != top_color)
                 {
-                    //If the edge peice is in the right postion but wrong orientation and the same is in the (n-1-k) side
-                    if(cube[1][k][n-1] == color2 && cube[0][k][0] == color1 && cube[1][n-1-k][n-1] == color2 && cube[0][n-1-k][0] == color1)
-                    {
-                        rot('l',n-1-k,3);
-                        rot('b',n-1,2);
-                        rot('l',k,3);
-                        rot('f',0,2);
-                        rot('l',k,1);
-                        rot('f',0,2);
-                        rot('l',n-1-k,2);
-                        rot('b',n-1,2);
-                        rot('l',n-k-1,1);
-                        rot('b',n-1,2);
-                        rot('l',n-k-1,3);
-                        rot('b',n-1,2);
-                        rot('f',0,2);
-                        rot('l',n-k-1,2);
-                        rot('f',0,2);
+                    if(isDisplay) fprintf(display_file,"Edge piece at i = %d placed wrong\n",k);
+                    //New Parity Solver
+                    //If the edge piece of the cube at edge (1,2) and of i-th layer is flipped
 
-                    }
-                    //If the edge peice is in the rigth position but wrong orientation
-                    else if(cube[1][k][n-1] == color2 && cube[0][k][0] == color1)
-                    {
-                        if(!(cube[1][k][0] == color1 && cube[4][k][n-1] == color2) || (cube[1][k][0] == color2 && cube[4][k][n-1] == color1))
-                        {
-                            rot('b',0,1);
-                            rot('f',0,1);
-                            rot('l',n-1,1);
-                            rot('f',0,3);
+                    if(cube[0][k][0] == front_color && cube[1][k][n-1] == top_color){
+                        //If the edge piece at (n-i-1)th layer is also placed correctly but flipped.
+                        if(cube[1][n-1-k][n-1] == top_color && cube[0][n-1-k][0] == front_color){
+                            if(isDisplay) fprintf(display_file,"Case 1\n");
+                            rot('l',n-1-k,3);
+                            rot('b',n-1,2);
+                            rot('l',k,3);
+                            rot('f',0,2);
+                            rot('l',k,1);
+                            rot('f',0,2);
+                            rot('l',n-1-k,2);
+                            rot('b',n-1,2);
+                            rot('l',n-k-1,1);
+                            rot('b',n-1,2);
+                            rot('l',n-k-1,3);
+                            rot('b',n-1,2);
+                            rot('f',0,2);
+                            rot('l',n-k-1,2);
+                            rot('f',0,2);
                         }
-
-                        rot('l',k,1);
-                        rot('b',n-1,3);
-                        rot('l',0,1);
-                        rot('b',n-1,1);
-                        rot('f',0,1);
-                        rot('l',0,2);
-                        rot('f',0,3);
-                        rot('l',k,3);
+                        else{
+                            //If the correct piece is at the bottom edge (opposite below)
+                            if(cube[1][n-k-1][0] == front_color && cube[4][k][n-1] == top_color){
+                                if(isDisplay) fprintf(display_file,"Case 2.1\n");
+                                rot('b',0,1);
+                                rot('f',0,1);
+                                rot('l',n-1,1);
+                                rot('f',0,3);
+                            }
+                            //If the correct piece is at the bottom egde (exactly below)
+                            if(cube[1][k][0] == top_color && cube[4][k][n-1] == front_color){
+                                if(isDisplay) fprintf(display_file,"Case 2.2\n");
+                                rot('l',k,1);
+                                rot('b',n-1,3);
+                                rot('l',0,1);
+                                rot('b',n-1,1);
+                                rot('f',0,1);
+                                rot('l',0,2);
+                                rot('f',0,3);
+                                rot('l',k,3);
+                            }
+                        }
                     }
+
+
                     //If the edge peice needs to be transfered to the other edge.
                     else
                     {
-                        if((cube[1][k][0] == color1 && cube[4][k][n-1] == color2) || (cube[1][k][0] == color2 && cube[4][k][n-1] == color1))
+                        
+                        if(!((cube[1][n-k-1][0] == front_color && cube[4][k][n-1] == top_color) || (cube[1][n-k-1][0] == top_color && cube[4][k][n-1] == front_color)))
                         {
+                            if(isDisplay) fprintf(display_file,"Case 3.1\n");
                             rot('b',0,1);
                             rot('f',0,1);
                             rot('l',n-1,1);
                             rot('f',0,3);
                         }
-
-                        turn('f',2);
+                        if(isDisplay) fprintf(display_file,"Case 3\n");
                         rot('l',n-1-k,1);
                         rot('b',n-1,3);
                         rot('l',0,1);
@@ -1886,190 +1891,51 @@ void edge_solve_parity()
                         rot('l',0,2);
                         rot('f',0,3);
                         rot('l',n-1-k,3);
-                        turn('f',2);
+
+                        //Make the top edge center edge placed correctly.
+                        rot('b',n-1,1);
+                        rot('f',0,3);
+                        rot('l',n-1,3);
+                        rot('f',0,1);
                     }
                 }
             }
         }
 
-        if(count_unsolved_edge() == 1){
+        else if(count_unsolved_edge() == 1){
             bring_unsolved_top();
-            int color1 = cube[1][n/2][n-1];   //Facing Blue
-            int color2 = cube[0][n/2][0];     //Facing white
-            for(int k=1;k<n-1;k++){
-                if(!(cube[1][k][n-1] == color1 && cube[0][k][0] == color2)){
-                    if(cube[1][k][n-1] == color2 && cube[0][k][0] == color1 && cube[1][n-1-k][n-1] == color2 && cube[0][n-1-k][0] == color1)
-                    {
-                        rot('l',n-1-k,3);
-                        rot('b',n-1,2);
-                        rot('l',k,3);
-                        rot('f',0,2);
-                        rot('l',k,1);
-                        rot('f',0,2);
-                        rot('l',n-1-k,2);
-                        rot('b',n-1,2);
-                        rot('l',n-k-1,1);
-                        rot('b',n-1,2);
-                        rot('l',n-k-1,3);
-                        rot('b',n-1,2);
-                        rot('f',0,2);
-                        rot('l',n-k-1,2);
-                        rot('f',0,2);
-
+            if(is_edge_solved(1,2)) turn('f',2);
+            int front_color = cube[1][n/2][n-1];   //Facing Blue
+            int top_color = cube[0][n/2][0];     //Facing white
+            for(int k = 0;k<n-1;k++){
+                if(isDisplay) fprintf(display_file,"Now checking for the piece at i = %d\n",k);
+                if(cube[1][k][n-1] != front_color && cube[0][k][0] != top_color){
+                    if(cube[0][k][0] == front_color && cube[1][k][n-1] == top_color){
+                        if(cube[1][n-1-k][n-1] == top_color && cube[0][n-1-k][0] == front_color){
+                            if(isDisplay) fprintf(display_file,"Case 1\n");
+                            rot('l',n-1-k,3);
+                            rot('b',n-1,2);
+                            rot('l',k,3);
+                            rot('f',0,2);
+                            rot('l',k,1);
+                            rot('f',0,2);
+                            rot('l',n-1-k,2);
+                            rot('b',n-1,2);
+                            rot('l',n-k-1,1);
+                            rot('b',n-1,2);
+                            rot('l',n-k-1,3);
+                            rot('b',n-1,2);
+                            rot('f',0,2);
+                            rot('l',n-k-1,2);
+                            rot('f',0,2);
+                        }
                     }
-                }
-            }
-        }
-        
-        
-        if(test) printf("I dont know what it does. See it yourself\n");
-        if(test) display();
-        bring_unsolved_top();
-        //printf("So now the unsolved edge is brought to the top\n");
-        if(is_edge_solved(1,2)){
-            if(test) printf("But if you still don't see the unsolved edge then here we go\n");
-            turn('f',2);
-        }
-        if(test) display();
-        if(test) printf("And now the unsolved edge is to be made right with safe function");
-        if(n%2!=0 && !is_edge_solved(1,2)){
-            safe_solve();
-        }
-        //If the cube is solved then 
-        if(is_edge_solved(1,2) && is_edge_solved(1,3)) return;
-
-        //Now we might still have the edge swapping in the front bottom edge.
-        turn('l',1);//Turn the cube to downside, so that the unsolved edge is at front-top edge
-
-        int color3 = cube[1][n/2][n-1];
-        for(int k=1;k<n/2;k++)
-        {
-            if(cube[1][k][n-1] != color3)
-            {
-                rot('l',n-1-k,3);
-                rot('b',n-1,2);
-                rot('l',k,3);
-                rot('f',0,2);
-                rot('l',k,1);
-                rot('f',0,2);
-                rot('l',n-1-k,2);
-                rot('b',n-1,2);
-                rot('l',n-k-1,1);
-                rot('b',n-1,2);
-                rot('l',n-k-1,3);
-                rot('b',n-1,2);
-                rot('f',0,2);
-                rot('l',n-k-1,2);
-                rot('f',0,2);
-
-            }
-        }
-        
- 
-        turn('l',3);
-
-        if(test) printf("\nEdge solved!\n");
-
-        if(test) printf("Remainder of n divided by 2 is %d\n",n%2);
-        //This segement is for odd numbered Rubik's cube.
-        //There will be one parity of the middle edge peice, that needs to be solved.
-        if(test) display();
-        if(n % 2 != 0)
-        {
-        
-            //If the cenetr edge peices of both the (front-top) and (front-bottom) egdes are in worng orientation
-            if(cube[1][n/2][n-1] == cube[0][1][0] && cube[0][n/2][n-1] == cube[1][1][n-1])
-            {
-                rot('l',n/2,1);
-                rot('b',n-1,3);
-                rot('l',0,1);
-                rot('b',n-1,1);
-                rot('f',0,1);
-                rot('l',0,2);
-                rot('f',0,3);
-                rot('l',n/2,3);
-            }
-
-            //If the centers have switched their location
-            else
-            {
-                for(int i=(n/2)+1;i<n-1;i++){rot('l',i,1);}
-                rot('b',n-1,3);
-                rot('l',0,1);
-                rot('b',n-1,1);
-                rot('f',0,1);
-                rot('l',0,2);
-                rot('f',0,3);
-                for(int i=(n/2)+1;i<n-1;i++){rot('l',i,3);}
-                if(test) printf("Break1\n");
-                if(test) display();
-
-                for(int i=1;i<(n/2);i++){rot('l',i,1);}
-                rot('b',n-1,3);
-                rot('l',0,1);
-                rot('b',n-1,1);
-                rot('f',0,1);
-                rot('l',0,2);
-                rot('f',0,3);
-                for(int i=1;i<(n/2);i++){rot('l',i,3);}
-                if(test) printf("break2\n");
-                if(test) display();
-            }
-
-        //there is this problem which is occcuring in every odd numbered cube. And that is of this (front-bottom) edge not being solved.
-        //There always exist this single edge parity thta needs to be solved
-        }
-        bring_unsolved_top();
-        if(n%2!=0 && !is_edge_solved(1,2)){
-            safe_solve();
-        }
-        //We will first check if the edge (blue-yellow) is solved
-        if(!is_edge_solved(2,6))
-        {
-            //bring that unsolved edge to the front-top edge
-            rot('f',0,2);
-            //Then we solve the single edge parity
-            odd_single_edge_parity();
-            bring_unsolved_top();
-            if(n%2!=0 && !is_edge_solved(1,2)){
-                safe_solve();
-            }
-        }
-
-
-        if(test) printf("Completed the middle edge parity (odd)\n");
-        return;
-    }
-    
-    if(count_unsolved_edge() == 1){
-        bring_unsolved_top();
-        int color1 = cube[1][n/2][n-1];   //Facing Blue
-        int color2 = cube[0][n/2][0];     //Facing white
-        for(int k=1;k<n-1;k++){
-            if(!(cube[1][k][n-1] == color1 && cube[0][k][0] == color2)){
-                if(cube[1][k][n-1] == color2 && cube[0][k][0] == color1 && cube[1][n-1-k][n-1] == color2 && cube[0][n-1-k][0] == color1)
-                {
-                    rot('l',n-1-k,3);
-                    rot('b',n-1,2);
-                    rot('l',k,3);
-                    rot('f',0,2);
-                    rot('l',k,1);
-                    rot('f',0,2);
-                    rot('l',n-1-k,2);
-                    rot('b',n-1,2);
-                    rot('l',n-k-1,1);
-                    rot('b',n-1,2);
-                    rot('l',n-k-1,3);
-                    rot('b',n-1,2);
-                    rot('f',0,2);
-                    rot('l',n-k-1,2);
-                    rot('f',0,2);
-
                 }
             }
         }
     }
-
+    
+    //Now we will have to aagin cme up with the 
     return;
 }
 
@@ -2094,17 +1960,43 @@ void edges()
             //Critical is a global variable.
             critical = 0;
             
-            bring_unsolved_top();   //This bring an unsolved edge to the edge (1,2)
-
-            if(test){
-                printf("Now you should have an unsolved edge at edge (1,2)\n");
-                display();
+            if(n%2 == 0) bring_unsolved_top();   //This bring an unsolved edge to the edge (1,2)
+            //In the case of odd cubes the middle piece of the edges are fixed
+            else{
+                switch (k)
+                {
+                    case 0:
+                        bring_unsolved_top_for_odd(1,3);
+                        break;
+                    case 1:
+                        bring_unsolved_top_for_odd(1,2);
+                        break;
+                    case 2:
+                        bring_unsolved_top_for_odd(1,5);
+                        break;
+                    case 3:
+                        bring_unsolved_top_for_odd(1,4);
+                        break;
+                    case 4:
+                        bring_unsolved_top_for_odd(2,3);
+                        break;
+                    case 5:
+                        bring_unsolved_top_for_odd(6,3);
+                        break;
+                    case 6:
+                        bring_unsolved_top_for_odd(5,3);
+                        break;
+                    case 7:
+                        bring_unsolved_top_for_odd(2,4);
+                        break;
+                    case 8:
+                        bring_unsolved_top_for_odd(6,5);
+                        break;
+                    case 9:
+                        bring_unsolved_top_for_odd(6,4);
+                        break;
+                }
             }
-            if(isDisplay){
-                fprintf(display_file,"Now you should have an unsolved edge at edge (1,2)\n");
-                display();
-            }
-            
 
             
             if(count_unsolved_edge()>=3)
@@ -2112,7 +2004,7 @@ void edges()
                 if(k==0)
                 {
                     solve_edge(1,3);
-                    if(n%2!=0 && !is_edge_solved(1,2)) safe_solve();
+                    
                     if(test){
                         printf("\033[1;31mThis should complete the white red edge\033[0m\n");
                         printf("Critical = %d\n",critical);
@@ -2128,7 +2020,7 @@ void edges()
                 else if(k==1)
                 {
                     solve_edge(1,2);
-                    if(n%2!=0 && !is_edge_solved(1,2)) safe_solve();
+                    
                     if(test){
                         printf("\n\033[1;31mCompleted the (White-Blue) edge\033[0m\n");
                         printf("Critical = %d\n",critical);
@@ -2144,7 +2036,7 @@ void edges()
                 else if(k==2)
                 {
                     solve_edge(1,5);
-                    if(n%2!=0 && !is_edge_solved(1,2)) safe_solve();
+                    
                     if(test){
                         printf("\n\033[1;31mCompleted the (White-Green) edge\033[0m\n");
                         printf("Critical = %d\n",critical);
@@ -2160,7 +2052,7 @@ void edges()
                 else if(k==3)
                 {
                     solve_edge(1,4);
-                    if(n%2!=0 && !is_edge_solved(1,2)) safe_solve();
+                    
                     if(test){
                         printf("\n\033[1;31mCompleted the (White-Orange) edge\033[0m\n");
                         printf("Critical = %d\n",critical);
@@ -2176,7 +2068,7 @@ void edges()
                 else if(k==4)
                 {
                     solve_edge(2,3);
-                    if(n%2!=0 && !is_edge_solved(1,2)) safe_solve();
+                    
                     if(test){
                         printf("\n\033[1;31mCompleted the (Blue-Red) edge\033[0m\n");
                         printf("Critical = %d\n",critical);
@@ -2192,7 +2084,7 @@ void edges()
                 else if(k==5)
                 {
                     solve_edge(6,3);
-                    if(n%2!=0 && !is_edge_solved(1,2)) safe_solve();
+                    
                     if(test){
                         printf("\n\033[1;31mCompleted the (Yellow-Red) edge\033[0m\n");
                         printf("Critical = %d\n",critical);
@@ -2208,7 +2100,7 @@ void edges()
                 else if(k==6)
                 {
                     solve_edge(5,3);
-                    if(n%2!=0 && !is_edge_solved(1,2)) safe_solve();
+                    
                     if(test){
                         printf("\n\033[1;31mCompleted the (Green-Red) edge\033[0m\n");
                         printf("Critical = %d\n",critical);
@@ -2224,7 +2116,7 @@ void edges()
                 else if(k==7)
                 {
                     solve_edge(2,4);
-                    if(n%2!=0 && !is_edge_solved(1,2)) safe_solve();
+                    
                     if(test){
                         printf("\n\033[1;31mCompleted the (Blue-Orange) edge\033[0m\n");
                         printf("Critical = %d\n",critical);
@@ -2240,7 +2132,7 @@ void edges()
                 else if(k==8)
                 {
                     solve_edge(6,5);
-                    if(n%2!=0 && !is_edge_solved(1,2)) safe_solve();
+                    
                     if(test){
                         printf("\n\033[1;31mCompleted the (Yellow-Green) edge\033[0m\n");
                         printf("Critical = %d\n",critical);
@@ -2256,7 +2148,7 @@ void edges()
                 else if(k==9)
                 {
                     solve_edge(6,4);
-                    if(n%2!=0 && !is_edge_solved(1,2)) safe_solve();
+                    
                     if(test){
                         printf("\n\033[1;31mCompleted the (Yellow-Orange) edge\033[0m\n");
                         printf("Critical = %d\n",critical);
@@ -2274,16 +2166,7 @@ void edges()
             }
         }       
     }
-    if(test){
-        printf("Count_unsolved_edge = %d\n",count_unsolved_edge());
-        display();
-        printf("\nParity ahead!\n");
-    }
-    if(isDisplay){
-        fprintf(display_file,"Count_unsolved_edge = %d\n",count_unsolved_edge());
-        display();
-        fprintf(display_file, "\nParity Ahead!\n");
-    }
+    
 
     edge_solve_parity();
     return;
@@ -2536,11 +2419,12 @@ void white_plus()
 //Now we make the first layer
 void first_layer()
 {
-    for(int k=0;k<8;k++)
+    for(int k=0;k<12;k++)
     {
         //if the color at the top right of ceter matrix is white
         if(cube[1][n-1][n-1] == 1)
         {
+            if(isDisplay) fprintf(display_file,"if the color at the top right of ceter matrix is white\n");
             //when there is a blue at top of white
             if(cube[0][n-1][0] == cube[1][n/2][n/2])
             {
@@ -2588,6 +2472,7 @@ void first_layer()
         //if the color at the top left of center matrix is white
         if(cube[1][0][n-1] == 1)
         {
+            if(isDisplay) fprintf(display_file,"if the color at the top left of center matrix is white\n");
             //if the color at top of white is green
             if(cube[0][0][0] == cube[5][n/2][n/2])
             {
@@ -2635,6 +2520,7 @@ void first_layer()
         //if the color at the bottom left of center matrix in white
         if(cube[1][0][0] == 1)
         {
+            if(isDisplay) fprintf(display_file,"if the color at the bottom left of center matrix in white\n");
             //if the color at the bottom of white is orange
             if(cube[4][0][n-1] == cube[3][n/2][n/2])
             {
@@ -2670,6 +2556,7 @@ void first_layer()
         //if the color at the bottom right of center matrix is white
         if(cube[1][n-1][0] == 1)
         {
+            if(isDisplay) fprintf(display_file,"if the color at the bottom right of center matrix is white\n");
             //if the color at the bottom of white is red
             if(cube[4][n-1][n-1] == cube[2][n/2][n/2])
             {
@@ -2705,6 +2592,7 @@ void first_layer()
         //if the color at the top right of bottom matrix is white
         if(cube[4][n-1][n-1] == 1)
         {
+            if(isDisplay) fprintf(display_file,"if the color at the top right of bottom matrix is white\n");
             //if the color above the white is orange
             if(cube[1][n-1][0] == cube[3][n/2][n/2])
             {
@@ -2755,6 +2643,7 @@ void first_layer()
         //if the color at the top left of bottom matrix is white
         if(cube[4][0][n-1] == 1)
         {
+            if(isDisplay) fprintf(display_file,"if the color at the top left of bottom matrix is white\n");
             //if the color above white is red
             if(cube[1][0][0] == cube[2][n/2][n/2])
             {
@@ -2806,6 +2695,7 @@ void first_layer()
         //if the color at the bottom left of top matix is white
         if(cube[0][0][0] == 1)
         {
+            if(isDisplay) fprintf(display_file,"if the color at the bottom left of top matix is white\n");
             //If the color at the top left of front matrix is orange
             if(cube[1][0][n-1] == cube[3][n/2][n/2])
             {
@@ -2846,6 +2736,7 @@ void first_layer()
         //If the color at the bottom right of the top matrix is white
         if(cube[0][n-1][0] == 1)
         {
+            if(isDisplay) fprintf(display_file,"If the color at the bottom right of the top matrix is white\n");
             //If the color at the top right of front matrix is orange
             if(cube[1][n-1][n-1] == cube[3][n/2][n/2])
             {
@@ -3715,6 +3606,10 @@ void finale()
 void Beginners_Algorithm(){
 
     if(n > 3){
+        //Position the centers when solving the odd cube before making the center.
+        if(n%2 != 0){
+            positionCenters();
+        }
         if(isDisplay) fprintf(display_file,"\nStarting to solve Center\n");
         center();
         if(isDisplay) fprintf(display_file,"\nCompleted the Centers\n");
@@ -3741,7 +3636,7 @@ void Beginners_Algorithm(){
         // printf("\n****************************************************\n");
         if(test) printf("\033[1:33mWHITE PLUS\n\033[0m");
         white_plus();
-        if(isDisplay) fprintf(display_file,"\nWhilte Plus\n");
+        if(isDisplay) fprintf(display_file,"\nCompleted Whilte Plus\n");
         //display();
 
         if(break1)
@@ -3813,12 +3708,28 @@ void Beginners_Algorithm(){
     return;
 }
 
+//This function will be used to see if the cube is solved
+int isCubeSolved(){
+    for(int face = 0;face <5;face++){
+        int color = cube[face][0][0];
+        for(int i = 0;i<n;i++){
+            for(int j = 0;j<n;j++){
+                if(cube[face][i][j] != color) return 0;
+            }
+        }
+    }
+
+    return 1;
+}
+
 //Main function
 int main(int argc, char*argv[])
 {
     if(isDisplay){
         display_file = fopen("Display_Output.txt","w");
     }
+    //This file is for post processing
+
     //This file will be used to record the results
     result_file = fopen("Result.csv","w");
     //here the reslt of entropy at each step will be stored sperated by commas. Each line with each value of entropy.
@@ -3828,7 +3739,7 @@ int main(int argc, char*argv[])
         exit(0);
     }
 
-    fprintf(result_file,"Dimension,Sample,Steps_Count,Computation_Time");
+    fprintf(result_file,"Dimension,Sample,Steps_Count,Computation_Time,Verdict");
     fprintf(result_file,"\n");
     
 
@@ -3848,7 +3759,7 @@ int main(int argc, char*argv[])
     const int end_dim = atoi(argv[2]); printf("End Dimension: %d\n",end_dim);
     const int No_Sample = atoi(argv[3]); printf("Samples per Dim: %d\n\n",No_Sample);
 
-    
+    int* success_rate_array = (int*)malloc(sizeof(int)*No_Sample);
 
     int x = start_dim;
     while(x <= end_dim){
@@ -3905,7 +3816,8 @@ int main(int argc, char*argv[])
                 if(test) display();
                 if(test) printf("Dimension: %d | Sample: %d | Steps: %d | Time: %lf\n",n,sample,steps,time_taken);
 
-                fprintf(result_file,"%d,%d,%d,%lf",n,sample,steps,time_taken);
+                //Fill the file
+                fprintf(result_file,"%d,%d,%d,%lf,%d",n,sample,steps,time_taken,isCubeSolved());
 
                 y++;
 
