@@ -1333,13 +1333,7 @@ void pair(int top, int front)
             fprintf(display_file,"Must be an unsolved edge at the (Blue Red) Edge\n");
             display();
         }
-        /*
-            5 5 5 5 5 6 
-            6 4 3 4 6 6 
 
-Fill the edge piece (Case 2, i = 1)
-Rotate 1 th layer from bottom, right
-*/
         
         //Proceed to fill one edge piece.
         if(cube[1][i][0] == top && cube[4][i][n-1] == front)
@@ -1423,6 +1417,31 @@ void solve_edge(int top_color,int front_color)
 
     else
     {
+        //Special Case
+        if(isDisplay) fprintf(display_file,"Check if the edge has pieces that are flipped\n");
+        for(int i=1;i<n-1;i++){
+            if((cube[0][i][0] == front_color && cube[1][i][n-1] == top_color) && cube[0][n-i-1][0] == front_color && cube[1][n-i-1][n-1] == top_color){
+                rot('l',n-1-i,3);
+                rot('b',n-1,2);
+                rot('l',i,3);
+                rot('f',0,2);
+                rot('l',i,1);
+                rot('f',0,2);
+                rot('l',n-1-i,2);
+                rot('b',n-1,2);
+                rot('l',n-i-1,1);
+                rot('b',n-1,2);
+                rot('l',n-i-1,3);
+                rot('b',n-1,2);
+                rot('f',0,2);
+                rot('l',n-i-1,2);
+                rot('f',0,2);
+
+                critical = critical + 2;  
+            }
+        }
+        
+
         //Here we will bring the desired color edge att he bottom-front edge and we are not going to disturb the top-front edge becuase that is where the edge will be getting solved.
         if(test) printf("Checking for (Red-White) edge\n");
         if(isDisplay) fprintf(display_file,"Checking for (Red-White) edge\n");
@@ -1679,8 +1698,20 @@ void bring_unsolved_top()
 
 //This function is only for the odd cubes where the edge with the middle edge 
 void bring_unsolved_top_for_odd(int top, int front){
+
+    if(cube[0][n/2][0] == top && cube[1][n/2][n-1] == front){
+        return;
+    }
+
+    //If the edge piece is at the same position but is flipped
+    if(cube[0][n/2][0] == front && cube[1][n/2][n-1] == top){
+        rot('b',n-1,1);
+        rot('f',0,3);
+        rot('l',n-1,3);
+        rot('f',0,1);
+    }
     //Check if edge (2,6) has the mid edge piece as required
-    if(cube[1][n/2][0] == front && cube[4][n/2][n-1] == top){
+    else if(cube[1][n/2][0] == front && cube[4][n/2][n-1] == top){
         bring_unsolved_top();
         turn('f',2);
     } else if(cube[1][n/2][0] == top && cube[4][n/2][n-1] == front) {
@@ -1776,6 +1807,8 @@ void bring_unsolved_top_for_odd(int top, int front){
         rot('l',n-1,3);
         rot('b',n-1,3);
     }
+
+    return;
 }
 
 //So one quick remedy that I get after this is to check if all the edges are solved each time I do something.
@@ -1865,6 +1898,12 @@ void edge_solve_parity()
                                 rot('l',0,2);
                                 rot('f',0,3);
                                 rot('l',k,3);
+
+                                //And then make the 
+                                rot('b',n-1,1);
+                                rot('f',0,3);
+                                rot('l',n-1,3);
+                                rot('f',0,1);
                             }
                         }
                     }
@@ -1874,7 +1913,7 @@ void edge_solve_parity()
                     else
                     {
                         
-                        if(!((cube[1][n-k-1][0] == front_color && cube[4][k][n-1] == top_color) || (cube[1][n-k-1][0] == top_color && cube[4][k][n-1] == front_color)))
+                        if(!((cube[1][n-k-1][0] == top_color && cube[4][n-k-1][n-1] == front_color) || (cube[1][n-k-1][0] == front_color && cube[4][n-k-1][n-1] == top_color)))
                         {
                             if(isDisplay) fprintf(display_file,"Case 3.1\n");
                             rot('b',0,1);
@@ -1892,7 +1931,6 @@ void edge_solve_parity()
                         rot('f',0,3);
                         rot('l',n-1-k,3);
 
-                        //Make the top edge center edge placed correctly.
                         rot('b',n-1,1);
                         rot('f',0,3);
                         rot('l',n-1,3);
